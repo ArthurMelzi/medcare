@@ -79,3 +79,42 @@ INSERT INTO pacientes (nome, email, cpf, data_nascimento) VALUES
 ('Carlos Silva', 'carlos.silva@email.com', '11122233344', '1985-05-12'),
 ('Mariana Costa', 'mariana.costa@email.com', '55566677788', '2010-08-25'),
 ('Lucas Pereira', 'lucas.pereira@email.com', '99900011122', '1998-11-03');
+
+-- Q1
+SELECT nome, crm, especialidade_id, valor_consulta
+FROM medicos
+ORDER BY valor_consulta DESC;
+
+
+-- Q2
+SELECT c.id, c.data_hora, m.nome, e.nome, c.status
+FROM consultas c
+JOIN pacientes p ON c.paciente_id = p.id
+JOIN medicos m ON c.medico_id = m.id
+JOIN especialidades e ON m.especialidade_id = e.id
+WHERE p.nome = 'Carlos Silva';
+
+
+-- Q3
+SELECT c.id, p.nome, m.nome,
+       m.valor_consulta + COALESCE(SUM(ec.valor_exame), 0) AS valor_total
+FROM consultas c
+JOIN pacientes p ON c.paciente_id = p.id
+JOIN medicos m ON c.medico_id = m.id
+LEFT JOIN exames_consulta ec ON c.id = ec.consulta_id
+GROUP BY c.id, p.nome, m.nome, m.valor_consulta;
+
+
+-- Q4
+SELECT nome, crm, especialidade_id, valor_consulta
+FROM medicos
+WHERE valor_consulta > 300;
+
+
+-- Q5
+SELECT e.nome, SUM(m.valor_consulta) AS total_faturado
+FROM consultas c
+JOIN medicos m ON c.medico_id = m.id
+JOIN especialidades e ON m.especialidade_id = e.id
+WHERE c.status = 'Realizada'
+GROUP BY e.nome;
